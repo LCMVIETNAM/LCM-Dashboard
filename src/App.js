@@ -6,11 +6,8 @@ import {
 } from 'lucide-react';
 
 const App = () => {
-  // --- THÔNG SỐ CỦA QUỸ LCM VIETNAM 2.0 ---
+  // --- THÔNG SỐ CỐ ĐỊNH ---
   const BASE_PRICE = 1000; 
-  const reportDate = "17/03/2026";
-  const closingDate = "28/02/2026";
-  
   const fundData = {
     totalNav: 394978329,
     totalShares: 300000, 
@@ -21,29 +18,9 @@ const App = () => {
   const navPerShare = fundData.totalNav / fundData.totalShares;
   const totalGrowth = ((navPerShare - BASE_PRICE) / BASE_PRICE * 100).toFixed(2);
 
-  // --- QUẢN LÝ CỔ ĐÔNG ---
-  const shareholders = [
-    { name: "NGƯỜI A", shares: 150000, color: "bg-purple-500" },
-    { name: "NGƯỜI B", shares: 90000, color: "bg-indigo-500" },
-    { name: "NGƯỜI C", shares: 60000, color: "bg-fuchsia-500" },
-  ];
-
-  // --- DANH MỤC VIP WATCHLIST ---
-  const coreStocks = [
-    { ticker: "HPG", sector: "Thép", weight: 25, moat: "Chi phí thấp" },
-    { ticker: "FPT", sector: "Công nghệ", weight: 20, moat: "Xuất khẩu phần mềm" },
-    { ticker: "NLG", sector: "BĐS", weight: 15, moat: "Sạch tài chính" },
-    { ticker: "ACB", sector: "Ngân hàng", weight: 20, moat: "Quản trị rủi ro" },
-    { ticker: "TPB", sector: "Ngân hàng", weight: 20, moat: "Ngân hàng số" },
-  ];
-
-  const subStocks = ["NTC", "PTB", "SGN", "QNS", "QTP"];
-
-  // --- TRỢ LÝ AI (KẾT NỐI BẢO MẬT) ---
+  // --- TRỢ LÝ AI ---
   const [aiResponse, setAiResponse] = useState("");
   const [isAiLoading, setIsAiLoading] = useState(false);
-  
-  // Lấy API Key từ biến môi trường của Vercel (giúp bảo mật)
   const apiKey = process.env.REACT_APP_GEMINI_API_KEY; 
 
   const callGemini = async (prompt) => {
@@ -58,11 +35,11 @@ const App = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           contents: [{ parts: [{ text: prompt }] }],
-          systemInstruction: { parts: [{ text: `Bạn là trợ lý Quỹ LCM 2.0 của anh Trọng. NAV/CP hiện tại: ${navPerShare.toLocaleString()}đ.` }] }
+          systemInstruction: { parts: [{ text: `Bạn là trợ lý Quỹ LCM 2.0. NAV/CP hiện tại là ${navPerShare.toLocaleString()}đ.` }] }
         })
       });
       const result = await response.json();
-      setAiResponse(result.candidates?.[0]?.content?.parts?.[0]?.text || "AI đang bận, anh thử lại nhé.");
+      setAiResponse(result.candidates?.[0]?.content?.parts?.[0]?.text || "AI đang bận một chút, anh thử lại nhé.");
     } catch (err) {
       setAiResponse("Không thể kết nối với AI. Anh kiểm tra lại API Key nhé.");
     } finally {
@@ -70,58 +47,60 @@ const App = () => {
     }
   };
 
-  // --- LOGIC TÍNH TOÁN VỐN ---
-  const [investAmount, setInvestAmount] = useState(10000000);
-  const estimatedShares = investAmount / navPerShare;
-
   return (
-    <div className="min-h-screen bg-[#F8FAFC] p-4 md:p-8 font-sans">
+    <div className="min-h-screen bg-[#F8FAFC] p-4 md:p-8 font-sans text-slate-900">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <div className="flex justify-between items-center mb-10">
-          <div>
-            <h1 className="text-3xl font-black text-slate-900 uppercase">LCM VIETNAM</h1>
-            <p className="text-[#5850EC] font-bold tracking-widest text-xs">HUUTRONG PARTNERSHIP</p>
+        <div className="flex flex-col md:flex-row justify-between items-start gap-6 mb-10">
+          <div className="flex items-center gap-4">
+            <div className="bg-[#5850EC] w-14 h-14 rounded-2xl text-white flex items-center justify-center font-black text-2xl shadow-xl">LT</div>
+            <div>
+              <h1 className="text-2xl font-black tracking-tighter uppercase">LCM VIETNAM</h1>
+              <div className="text-[10px] font-black text-[#5850EC] uppercase tracking-[0.3em]">HuuTrong Partnership</div>
+            </div>
           </div>
-          <div className="bg-[#5850EC] text-white px-4 py-2 rounded-xl text-xs font-bold uppercase">
-            Báo cáo: {reportDate}
+          <div className="bg-[#5850EC] text-white px-6 py-3 rounded-2xl text-[11px] font-black flex items-center gap-2 shadow-lg uppercase">
+            <Zap size={16} className="text-amber-400 fill-amber-400" /> Kỷ luật LCM 2.0
           </div>
         </div>
 
-        {/* Chỉ số chính */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white p-6 rounded-3xl shadow-sm border-b-4 border-emerald-500 text-center">
-            <p className="text-xs font-bold text-slate-400 uppercase">NAV / Cổ phần</p>
-            <h2 className="text-2xl font-black text-emerald-600">{navPerShare.toLocaleString(undefined, {maximumFractionDigits: 0})}đ</h2>
+        {/* Chỉ số */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div className="bg-emerald-50 p-6 rounded-[2rem] border-b-4 border-emerald-500 relative overflow-hidden">
+            <p className="text-emerald-600 text-[10px] font-black uppercase mb-1">NAV / Cổ phần</p>
+            <h3 className="text-2xl font-black">{navPerShare.toLocaleString(undefined, {maximumFractionDigits: 0})}đ</h3>
+            <Coins className="absolute -right-4 -bottom-4 text-emerald-200 w-20 h-20 opacity-40" />
           </div>
-          <div className="bg-[#0F172A] p-6 rounded-3xl shadow-sm border-b-4 border-amber-500 text-center">
-            <p className="text-xs font-bold text-slate-400 uppercase">Tăng trưởng</p>
-            <h2 className="text-2xl font-black text-emerald-400">+{totalGrowth}%</h2>
+          <div className="bg-[#0F172A] p-6 rounded-[2rem] border-b-4 border-amber-500 text-center relative overflow-hidden text-white">
+            <p className="text-slate-400 text-[10px] font-black uppercase mb-1">Tăng trưởng</p>
+            <h3 className="text-2xl font-black text-emerald-400">+{totalGrowth}%</h3>
+            <TrendingUp className="absolute -right-2 -bottom-2 text-white opacity-[0.05] w-20 h-20" />
           </div>
-          {/* Anh có thể thêm các thẻ khác tương tự ở đây */}
         </div>
 
-        {/* Trợ lý AI */}
-        <div className="bg-slate-900 rounded-[2.5rem] p-8 mb-8 text-white border-r-8 border-[#5850EC]">
-          <h3 className="flex items-center gap-2 font-black uppercase mb-4">
-            <Sparkles className="text-amber-400" /> Trợ lý chiến lược AI
-          </h3>
-          <div className="flex flex-col md:flex-row gap-6">
-            <button 
-              onClick={() => callGemini("Phân tích tình hình quỹ hiện tại")}
-              className="bg-[#5850EC] px-6 py-3 rounded-2xl font-bold text-sm hover:bg-indigo-700 transition-all"
-            >
-              Phân tích hiệu suất ✨
-            </button>
-            <div className="flex-1 bg-white/5 p-6 rounded-2xl italic text-slate-300 text-sm min-h-[100px]">
-              {isAiLoading ? "AI đang suy nghĩ..." : aiResponse || "Nhấn nút để AI bắt đầu tư vấn cho anh..."}
+        {/* AI Box */}
+        <div className="bg-slate-900 rounded-[2.5rem] p-8 mb-8 text-white border-r-8 border-[#5850EC] relative overflow-hidden">
+          <div className="relative z-10">
+            <h3 className="flex items-center gap-2 font-black uppercase text-xs mb-6">
+              <Sparkles className="text-amber-400" /> Trợ lý chiến lược AI ✨
+            </h3>
+            <div className="flex flex-col md:flex-row gap-6">
+              <button 
+                onClick={() => callGemini("Phân tích hiệu suất Quỹ LCM và đưa ra lời khuyên.")}
+                disabled={isAiLoading}
+                className="bg-[#5850EC] hover:bg-indigo-600 px-8 py-4 rounded-2xl font-black text-[10px] uppercase transition-all shrink-0"
+              >
+                {isAiLoading ? "Đang tính..." : "Phân tích hiệu suất"}
+              </button>
+              <div className="flex-1 bg-white/5 border border-white/10 p-6 rounded-2xl italic text-slate-300 text-sm min-h-[100px]">
+                {aiResponse || "Chào anh Trọng! Nhấn nút để em phân tích dữ liệu Quỹ hôm nay nhé."}
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Phần còn lại của giao diện (Danh mục, Quản trị vốn...) anh giữ nguyên như code cũ */}
-        <div className="text-center text-slate-400 text-[10px] mt-20 uppercase tracking-[0.5em]">
-          LCM VIETNAM • CONFIDENTIAL
+        <div className="text-center text-slate-400 text-[10px] font-black uppercase tracking-[0.5em] opacity-30 mt-20">
+          LCM VIETNAM • CONFIDENTIAL DOCUMENT
         </div>
       </div>
     </div>
